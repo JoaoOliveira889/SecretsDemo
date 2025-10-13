@@ -19,7 +19,7 @@ public class LoggerService(IOptions<ExternalLoggerOptions> options)
         // Simulates real use where the token allows the operation
         string logDetails = $"Base URL: {_options.BaseUrl} | Level: {_options.MinimumLevel}";
             
-        // Token would be used here
+        // ApiKey would be used here
         return $"Log of '{message}' sent successfully! Config: {logDetails}";
     }
 }
