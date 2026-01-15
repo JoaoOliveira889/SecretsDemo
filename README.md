@@ -1,61 +1,94 @@
-# 🔒 Securely Managing API Keys (User Secrets Manager) in C#
+# User Secrets: The Right Way to Protect API Keys in .NET
 
-## Overview
+> **Article:** [User Secrets: The Right Way to Protect API Keys in .NET](https://dev.to/joaooliveiratech/user-secrets-the-right-way-to-protect-api-keys-in-net-93a)
 
-This repository contains the demonstration code for a **.NET Web API** project focused on using the **User Secrets Manager**.
-
-The main goal of this tool is to store sensitive configuration data, such as API keys (`ApiKey`) and access tokens, **during the development phase**. This ensures that this sensitive information is never accidentally **committed** to source control (Git/GitHub), preventing security leaks.
-
-The project simulates an API that requires a secret key to communicate with an external logging service (`ExternalLogger`).
+This repository demonstrates the implementation of the User Secrets Manager in a .NET Web API. The project focuses on protecting sensitive configuration data—such as API keys and access tokens—during the development phase to ensure they are never committed to source control.
 
 ---
 
-## Project Structure
+## What This Project Covers
 
-The `SecretsDemo` project demonstrates best practices in .NET for handling configuration:
-
-| File/Folder | Purpose |
-| :--- | :--- |
-| `appsettings.json` | Defines the base configuration structure (`BaseUrl` and `MinimumLevel`), without including the secret itself. |
-| `Configuration/` | Contains the `ExternalLoggerOptions.cs` class, which maps the configuration section to a typed C# class, making access easier. |
-| `Services/` | Contains the `LoggerService.cs` class, the service that consumes the configuration (`IOptions<T>`) and includes the crucial validation logic to check for the secret's presence. |
-| `Program.cs` | Responsible for setting up the **binding** of the configuration section with the `ExternalLoggerOptions` class and registering the `LoggerService` in the **Dependency Injection (DI)** container. |
+* Safe Secret Storage: Moving sensitive data out of `appsettings.json` and into the machine's local storage.
+* IOptions Pattern: Mapping configuration sections to strongly-typed C# classes for easier access and validation.
+* Dependency Injection (DI): Registering configuration and services within the .NET container.
+* Validation Logic: Ensuring the application gracefully handles missing secrets before attempting to use external services.
 
 ---
 
-## How to Set Up and Test
+## Concepts Overview
 
-### Prerequisites
+### Why User Secrets?
+
+In .NET, `appsettings.json` is typically tracked by Git. If you place an API key there, it becomes visible to anyone with access to the repository. The User Secrets Manager stores data in a separate JSON file located in your user profile folder, outside of the project tree.
+
+### The IOptions Pattern
+
+Instead of reading strings directly from the configuration, we use the `IOptions<T>` interface. This allows us to treat our settings as a standard C# object, providing:
+
+Type Safety: No more "magic strings."
+
+Validation: You can check if a secret is null or empty at startup.
+
+---
+
+## Tech Stack
+
+* Framework: .NET 9
+* CLI Tools: .NET Secret Manager
+
+### Environment Setup
 
 Ensure you have the **.NET SDK** installed on your machine.
 
-### Quick Steps (CLI)
+### Setup & Configuration
 
-1.  **Clone the Repository** and navigate to the project directory.
-2.  **Enable User Secrets:**
-    ```bash
-    dotnet user-secrets init
-    ```
-3.  **Add the Secret Key:**
-    ```bash
-    dotnet user-secrets set "ExternalLogger:ApiKey" "your-development-secret-key"
-    ```
-4.  **Run the Project:**
-    ```bash
-    dotnet run
-    ```
-5.  Access the `/log` endpoint (e.g., `https://localhost:7000/log`) to see the service in action.
+1. Clone the Repository and navigate to the project directory.
+2. Enable User Secrets:
 
----
+```bash
+dotnet user-secrets init
+```
 
-## 📚 Full Tutorial
+3. Set your Development Key:
 
-For a detailed explanation of the setup, creating `Options` classes, using Dependency Injection, and managing all the CLI commands (`set`, `list`, `remove`, `clear`), check out the complete article:
+```bash
+dotnet user-secrets set "ExternalLogger:ApiKey" "your-secret-key-here"
+```
 
-[**Read the Tutorial: User Secrets: The Right Way to Protect API Keys in .NET**](https://dev.to/joaooliveiratech/user-secrets-the-right-way-to-protect-api-keys-in-net-93a)
+4. Run the Project
+
+```bash
+dotnet run
+```
+
+Access the /log endpoint via your browser or Swagger to verify the service is correctly retrieving the secret.
 
 ---
 
-## ⚠️ Important Note on Production
+## Important Note on Production
 
-Remember: the **User Secrets Manager** is strictly for the **development** environment. In production, you must use a dedicated **Secret Store Service**, such as **Azure Key Vault** or **AWS Secrets Manager**.
+The User Secrets Manager is strictly for development. It does not encrypt the secrets; it simply moves them out of the code. For production environments, you must use a secure vault service such as:
+
+* Azure Key Vault
+* AWS Secrets Manager
+* HashiCorp Vault
+
+---
+
+## About
+
+This repository is part of my technical writing and learning notes.  
+If you found it useful, consider starring the repo and sharing feedback.
+
+* Author: Joao Oliveira
+* Blog: <https://joaooliveira.net>
+* Topics: .NET, Redis, Distributed Systems, Caching Patterns
+
+## Contributing
+
+Issues and pull requests are welcome.  
+If you plan a larger change, please open an issue first so we can align on scope.
+
+## License
+
+Licensed under the **MIT License**. See the `LICENSE` file for details.
